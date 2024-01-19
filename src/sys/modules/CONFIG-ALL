@@ -1,0 +1,53 @@
+#
+#  This file lists the names of modules which will be statically
+#  linked into the kernel.
+#
+#  Empty lines and lines beginning with a '#' are ignored.
+#  The format of a line is:
+#
+#	basename	directory	[dependancies]
+#
+# (dependancies are not yet implemented  TODO)
+
+
+#  Networking:
+
+net			net
+net_if			net/if
+
+
+#  ISA:
+
+isa			bus/isa
+pccon			bus/isa/pccon
+pccom			bus/isa/pccom
+isapnp			bus/isa/isapnp
+ep			bus/isa/ep
+pcppi			bus/isa/pcppi
+wdc			bus/isa/wdc
+fdc			bus/isa/fdc
+
+
+#  PCI:
+
+# not done yet
+
+
+#  Virtual device drivers:
+
+null			dev/null
+tty			dev/tty
+
+
+#  Binary emulation formats:
+
+openbsd_aout		emul/openbsd_aout
+
+
+#  Filesystems:
+
+devfs			fs/devfs
+ffs			fs/ffs
+# msdosfs		fs/msdosfs
+procfs			fs/procfs
+

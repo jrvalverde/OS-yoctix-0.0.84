@@ -1,0 +1,22 @@
+Makefile	Makefile for libkern.a
+filedesc.c	File descriptor functions
+init_main.c	Initialization (this is where the kernel "starts")
+kdb.c		Built-in kernel debugger
+lock.c		Resource locking functions
+malloc.c	Kernel memory allocation functions
+proc.c		Process related functions
+signal.c	Signal delivery functions
+socket.c	Socket functions
+sys_execve.c	execve() syscall
+sys_fd.c	File descriptor related syscalls
+sys_file.c	File related syscalls
+sys_fork.c	fork() syscall
+sys_misc.c	Misc. syscalls (reboot() etc.)
+sys_mmap.c	mmap() and similar syscalls
+sys_proc.c	Process related syscalls
+sys_sig.c	Signal related syscalls
+sys_socket.c	Socket related syscalls
+sys_time.c	Time related syscalls
+syscall.c	Generic syscall handler
+terminal.c	Generic terminal interface
+timer.c		Timer functions

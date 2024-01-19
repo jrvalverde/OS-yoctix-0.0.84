@@ -1,0 +1,14 @@
+#  /sbin/init will start one getty for each of the entries in this file
+
+ttyC0
+ttyC1
+ttyC2
+ttyC3
+ttyC4
+ttyC5
+ttyC6
+ttyC7
+ttyC8
+ttyC9
+ttyC10
+ttyC11

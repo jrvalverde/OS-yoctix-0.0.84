@@ -1,0 +1,46 @@
+#
+#  Yoctix kernel makefile
+#  ----------------------
+#
+#  Edit config.h, md/config.h, and modules/CONFIG before running make.
+#
+
+
+#CC=gcc
+#LD=ld
+#AR=ar
+
+CC=/usr/local/m68k_cc/m68k-apple-netbsd/bin/gcc
+LD=/usr/local/m68k_cc/bin/m68k-apple-netbsd-ld
+AR=/usr/local/m68k_cc/bin/m68k-apple-netbsd-ar
+
+
+LIBS=kern/libkern.a reg/libreg.a md/libmd.a vfs/libvfs.a vm/libvm.a std/libstd.a modules/libmodules.a
+
+all:
+	cd md; make CC=$(CC) LD=$(LD) AR=$(AR); cd ..
+	cd kern; make CC=$(CC) LD=$(LD) AR=$(AR); cd ..
+	cd reg; make CC=$(CC) LD=$(LD) AR=$(AR); cd ..
+	cd vfs; make CC=$(CC) LD=$(LD) AR=$(AR); cd ..
+	cd vm; make CC=$(CC) LD=$(LD) AR=$(AR); cd ..
+	cd std; make CC=$(CC) LD=$(LD) AR=$(AR); cd ..
+	cd modules; make CC=$(CC) LD=$(LD) AR=$(AR); cd ..
+	./make_ci
+	$(CC) -c compile_info.c
+#	ld -nostdlib -Bstatic -Ttext 0x100000 -z md/machdep_main.o $(LIBS) -o yoctix
+	$(LD) -nostdlib -Ttext 0x20 -static -e ___main md/machdep_main.o compile_info.o $(LIBS) $(LIBS) -o yoctix
+
+clean:
+	cd md; make clean; cd ..
+	cd kern; make clean; cd ..
+	cd reg; make clean; cd ..
+	cd vfs; make clean; cd ..
+	cd vm; make clean; cd ..
+	cd std; make clean; cd ..
+	cd modules; make clean; cd ..
+	rm -f yoctix compile_info.*
+
+
+modulesclean:
+	cd modules; make clean; cd ..
+

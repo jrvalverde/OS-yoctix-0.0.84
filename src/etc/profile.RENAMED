@@ -1,0 +1,11 @@
+umask 022
+
+alias dir="ls -la"
+alias cp="cp -i"
+alias ftp="ftp -i"
+alias rm="rm -i"
+alias mv="mv -i"
+alias cd..="cd .."
+alias df="df -k"
+alias du="du -k"
+

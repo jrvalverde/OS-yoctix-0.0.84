@@ -1,0 +1,11 @@
+CONFIG				This file specifies the modules which will be statically linked into the kernel image
+CONFIG.i386			i386 config
+CONFIG.mac68k			mac68k config
+Makefile			Makefile for all modules
+bus				Bus specific drivers
+create_minit.c			Statically create modules_init.c
+create_modules.c		Compiles all modules in all subdirs according to CONFIG
+dev				Drivers for machine independant (virtual) /dev files
+emul				Binary emulation drivers
+fs				File system drivers
+net				Network drivers

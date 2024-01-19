@@ -1,0 +1,553 @@
+Yoctix history
+--------------
+
+
+26 Sep 1999	-	Began planing a little on paper (in Swedish)
+
+27 Sep 1999	0.0.0	Wrote down some of the plans
+			in the TODO file (in Swedish too)
+			Creating bootdisk/, disttree/, doc/ and src/
+			directories. Creating some trivial files
+			in bootdisk/.
+			Creating a "homepage".
+
+28 Sep 1999	0.0.1	Using biosboot.S from OpenBSD.
+			Current status of the project: The bootsector
+			program (biosboot) loads the boot code and
+			jumps to it in 32-bit protected mode. It works,
+			right now it displays the digits 0123456789
+			in the upper-left corner of the display :)
+
+29 Sep 1999	0.0.2	Began creating the source tree with Makefiles.
+			But it must be planned better.
+			Found "Tran's pmode", which I might have to study
+			before coding my own 32-bit pmode routines.
+
+15 Oct 1999	0.0.3	Wrote a better homepage.
+			Wrote /bin utilities and manpages:
+			arch echo hostname mkdir pwd sleep sync uname
+			Begun writing 'sh' and 'cat' too...
+
+Renaming Yoktix to Yoctix.
+
+18 Oct 1999	0.0.4	- Created kernel source tree skeleton.
+			  arch/machdep_main.c, init/init_main.c, and
+			  std/snprintf.c (not working yet),
+			  arch/machdep_main_startup.c, arch/machdep_res_init.c
+			- The `burnkernel' program can burn a small
+			  kernel onto a floppy without a filesystem
+			- Adding memset(), console_* stuff for i386
+			  memcpy(), printk(), panic(), halt(),
+			  cmos_init() for i386, bios_init() for i386
+
+21 Oct 1999	0.0.5	- removing cmos_init() since the information
+			  in the CMOS is more or less worthless. removing
+			  BIOS manufacturer strings from bios_init(),
+			  since they just take up a lot of space in the kernel.
+			- rewriting snprintf()
+			- adding strlen()
+			- fixing bugs in panic() and printk(): stuff about
+			  va_lists and such.
+			- made a list of Swedish scan codes... good to have
+			  (support for other keyboard layouts will come later)
+
+22 Oct 1999	0.0.6	- relocating load address to 0x100000 (was 0x40000)
+			- adding gdt_init() (arch_i386/gdt.c)
+			- adding i386_lowalloc() for allocation of conventional
+			  memory
+
+24 Oct 1999	0.0.7	- fixing bug in gdt_init()
+			- adding pic_init() (arch_i386/pic.c)
+			- trying to add idt_init(), but it hangs
+			- trying to add syscall entry points for i386 - no success yet
+
+3 Nov 1999	0.0.8	- Planing how to implement the kernel memory allocator
+
+24 Nov 1999	0.0.9	- renamed src/kernel/init/ to src/kernel/kern/
+			- began writing the kernel malloc routines
+
+17 Dec 1999	0.0.10	- Removed doc/yoctix.html since the homepage now consists
+			  of approx. 10 different files, which don't all belong in
+			  the source distribution of Yoctix.
+			- syscall gate for i386 seems to be working!
+			- exceptions "work"; they cause a panic() :-)
+			- scans for available RAM by finding pages with 0xff as
+			  their first byte (stupid, but it works so far)...
+			- malloc_init() seems to work
+			- begun writing malloc()
+
+18 Dec 1999	0.0.11	- done with a preliminary malloc()
+			- added malloc_getsize()
+			- added free()
+			- Hopefully this should be enough work on the kernel
+			  memory allocator for now.
+
+20 Dec 1999	0.0.12	- added strncpy(), strlcpy(), strcmp(), strncmp() to std/string.c
+			- began writing the module handler
+
+27 Dec 1999	0.0.14	- added include/sys/proc.h, limits.h, vm.h, vfs.h, arch_i386/proc.h
+			- added kern/proc.c with proc_init()
+			- added vfs and vm subdirs, with vfs_init.c and vm_init.c
+			- changed all 'arch' references to 'md', and placed
+			  arch_i386 in arch/i386. Simplifies porting to other platforms (?)
+			  Now, md should be a link to arch/XXX, where XXX is your platform.
+			- began writing process handling functions
+			- on i386: using a.out header info to find out malloc_firstaddr
+			  at runtime (this could potentionally lead to the possibility of
+			  having the kernel image below the 640KB limit on i386, thus
+			  supporting systems with as low as for example 2MB RAM...)
+
+28 Dec 1999	0.0.15	- i386 biosboot.S now enables A20 for both PS/2 and AT systems...
+			- fixed typo-bug in arch/i386/gdt.c
+			- trying to get i386 "tasks" to work... YES! at least a bit...
+			- simple 1024 Hz system "ticks" timer is running...
+			- running two tasks, each increments a different byte in the
+			  videomem, so I know that it is working :-)
+			- the code written today is a mess... I'm not sure about how
+			  to handle the stacks for different routines, and the tasks seem
+			  to act in weird ways...
+
+2 Jan 2000	0.0.16	- preliminary doc/coding_style
+  and			- working with the paging stuff... it seems that I'll have to have
+3 Jan 2000		  the kernel permanently mapped at 4GB-4MB. Hm, this is getting
+			  trickier and trickier by the hour.
+
+5 Jan 2000	0.0.17	- semi-working preliminary support for statically linked modules
+			  (edit modules/CONFIG to select which ones to include...)
+			- semi-machine independant irq_dispatcher()
+			- fixed bug in md/console.c: when scrolling the screen contents
+			  upwards, I filled with 0's instead of 0x720's  :)  (In plain
+			  English:  the cursor mysteriously dissapeared when it was at the
+			  bottom of the screen after a scroll-up. But not anymore.)
+			- unregistering of modules should work
+			- began working on modules/isa
+			- began working on modules/isa/fdc
+			- began working on modules/isa/pccon (semi-Swedish keyboard layout)
+			- wrote ports registration stuff, but I've not tested it much yet
+
+7 Jan 2000	0.0.18	- creating src/sys/reg/ which contains the code for registering
+			  modules, ports, irqs, dma channels, ...
+			- writing a TODO file, most important things at the top
+			- adding isa_module_nametobuf to print nice dmesg lines with
+			  info about ports, irq, dma...
+			- began work on modules/isa/pcppi
+			- changed all 'dmesg' to 'console', since I haven't done any
+			  real dmesg-like functions yet
+
+8 Jan 2000	0.0.19	- working on isadma
+			- beginning to implement virtual memory regions and objects
+			- fixed annoying bug in memcpy() when dst addr > src addr (signed
+			  vs unsigned problem)
+			- working for several hours trying to get privilegie level 3 tasks
+			  to execute, but they simply hang and there's no simple reason
+			  for it...  :-(  I hope that this is not one of those weird bugs
+			  which doesn't go away whatever you do, and then mysteriously (when
+			  you least expect it) everything begins to work and you don't
+			  really know why...
+
+13 Jan 2000	0.0.20	- better layout on the Yoctix Project Homepage
+			- disables printk if DEBUGLEVEL<0
+			- more robust detection of i386 physical memory on startup, but there
+			  is always a risk that it will fail...
+			- totaly remodelling the i386 physical<->linear<->virtual addressing
+			  scheme
+			- broke i386 IDT stuff, wondered for an hour why it didn't work, and
+			  then accidentally fixed it. Hm, maybe I'm too tired to be productive
+			  right now...
+			- WONDERFUL! userlevel tasks work! The code segment should not be
+			  SEL_USERCODE, but SEL_USERCODE+3!!!  Now I'm beginning to wonder if
+			  I really had to remodel the entire address space concept... but it's
+			  probably better this way. One bad thing though: the more RAM you
+			  have, the less space left for user processes... if you for example
+			  have 3.5 GB RAM, then there'll be only 512 MB userspace left :-(
+			- syscall mechanism partly working (again)
+			- exception mechanism working (they panic() of course :-)
+			- sleep() and wakeup() (not tested yet, though)
+
+14 Jan 2000	0.0.21	- added machine independant interrupt enable/disable stuff in most
+			  (all?) critical sections written so far
+			- device registry
+			- a skeleton for a /dev/null driver (modules/dev/null/null.c)
+
+20 Jan 2000	0.0.22	- cleanup of init_main.c, actually tries to execve /sbin/init now
+			  (but it will not work, of course, since there's no vfs yet...)
+			  after trying to mount the root filesystem
+			- working on the vfs
+			- began writing sys_execve() and sys_usleep()
+
+29 Jan 2000	0.0.23	- updated doc/coding_style
+			- continuing on the floppy driver (a simple test can read a sector)
+
+4 Feb 2000	0.0.24	- added doc/guidelines
+			- continuing on the floppy driver
+
+5 Feb 2000	0.0.25	- continuing on the floppy driver (open, close, read single sector
+			  should work)
+			- vfs_mount(): can mount the root file system
+			- block_read(): can read blocks from devices (without cache so far)
+			- stat(), namei() work... I hope
+			- msdosfs: reading superblock and stat:ing files (both in the
+			  root directory and in subdirectories) should work...
+
+8 Feb 2000	0.0.26	- added vnode functions (not tested yet)
+			- began writing filedescriptor fd_open()
+
+18 Feb 2000	0.0.27	- working on sys_execve() (trying to execute /sbin/init)
+			- a mega-slow msdos_read() to read vnodes should work
+			- fixed (serious) bug in msdos_next_cluster()
+
+25 Feb 2000	0.0.28	- continuing on sys_execve()
+			- continuing on the openbsd_aout emulation (i386 so far)
+			- began on a page fault handler
+			- /sbin/init is started and text+data are paged in from disk,
+			  anonymous memory is filled with zeroes. But it is extremely
+			  slow because of a stupid msdos_read()
+			- wrote a simple buffer cache
+
+7 Mar 2000	0.0.29	- began remodelling several aspects of memory management:
+			  vmobjects, the mcb_t struct. Not much coding -- too tired.
+
+8 Mar 2000	0.0.30	- added some openbsd syscalls (getpid, getppid, getuid,
+			  geteuid, setuid, seteuid, exit, write, ioctl), but most of
+			  them are just skeleton functions
+
+14 Mar 2000	0.0.31	- working on the i386 virtual console driver (pccon). As soon
+			  as pccon is initialized, all calls to console_puts() are
+			  printed via pccon on virtual console ttyC0 (CTRL-ALT-F1).
+			  Many things work but not ANSI/VT100 stuff, caps lock,
+			  numeric keys, F-keys, cursor keys etc.
+
+15 Mar 2000	0.0.32	- buffercache_read() asks the device how many blocks it should
+			  read to be as effective as possible. On floppies, this means
+			  the number of sectors until the end of a track (beginning
+			  at a specific sector).
+			- fdc: support for reading multiple sectors in one call. An
+			  execve(miniinit) takes 5 seconds now instead of 18. :-)
+			- fdc: more stable error recovery (soft and hard error
+			  detection and retries on both seek and read)
+
+22 Mar 2000	0.0.33	- pccon now registers devices ttyC0..ttyC11
+			- working on devfs
+			- working on filedescriptors
+
+25 Mar 2000	0.0.34	- sys_write() to character devices works
+			- added sys_read() for character devices
+
+28 Mar 2000	0.0.35	- hacked my old sourcebrowser (cgi program) to produce
+			  nicely formated html code for those who want to
+			  browse yoctix-current/src/sys/ online...
+
+14 Apr 2000	0.0.36	- adding kern/lock.c, but haven't tested it yet
+
+15 Apr 2000	0.0.37	- adding kern/random.c (not a true random number
+			  generator, but at least it produces numbers ;--)
+
+16 Apr 2000	0.0.38	- MAJOR cleanup of namespace used in structs/typedefs
+			- began remodelling the VM system
+			- almost complete rewrite of vm_fault()
+
+20 May 2000	0.0.39	- added the COPYRIGHT file
+			- some small comments in various places
+
+24 May 2000	0.0.40	- continuing rewrite of vm_fault()
+			- continuing on fork(). fork() might actually work but
+			  there are other aspects of the system that are not
+			  ready for multiple tasks yet
+
+27 May 2000	0.0.41	- trying to solve some multitasking problems; there
+			  are panics but I don't know what causes them yet
+
+29 May 2000	0.0.42	- probably some locking problems... not working yet :-(
+
+2 Jun 2000	0.0.43	- YES! The problem probably didn't have to do with
+			  locking, but it was rather due to the unmapping of
+			  pages belonging to the parent process. These pages
+			  contained the code which called fork(), and everything
+			  got mixed up when there was no page fault, but the
+			  page was unmapped... anyway, it should work now.
+			  Hopefully. (I've probably spent more than 20 hours
+			  on this bug...)
+			- adding sys_open(), sys_close(). sys_exit() now calls
+			  sys_close() for all open descriptors.
+
+3 Jun 2000	0.0.44	- rewriting some parts of sys_execve() to make it work
+			  better. Should now work both from init_main() and
+			  from userland, although it is not fully functional
+			  yet: arguments and environment data is not copied to
+			  the new program.
+			- adding sys_fstat(), but I don't know if it works yet
+			- preliminary sys_writev()
+
+5 Jun 2000	0.0.45	- adding openbsd_aout sysctl() stuff, but only a few
+			  hardcoded special cases are supported so far
+			- planing how to get argv/envp stuff in execve() to work
+
+6 Jun 2000	0.0.46	- adding a Makefile which simplifies bootdisk creation
+			- biosboot now supports kernels larger than 64KB
+			- burnkernel "patches" the kernel on the floppy and
+			  updates the bootsector. Pretty nice, but hardcoded
+			  for 1.44 MB floppies only...
+			- trying to get argv/envp stuff in openbsd_aout to
+			  work, but something weird is going on. Or I'm too
+			  tired to understand.
+
+7 Jun 2000	0.0.47	- argv/envp in OpenBSD didn't work the way I expected it to,
+			  but looking at the source code of crt0.c in OpenBSD I
+			  finally figured it out. Should work now.
+			- read() on regular files should work as expected.
+			- starts /sbin/getty for each tty listed in /etc/ttys
+			- better locking for vnodes, although there are still
+			  some problems... deadlocks I guess. Unfortunately, I don't
+			  know yet what causes them.
+
+8 Jun 2000	0.0.48	- fixing deadlocks by NOT locking vnodes in vnode_pagein().
+			- adding compile info which is displayed during boot, looks
+			  like this: "#1 debug@glupnij Fri Jun 9 00:53:15 GMT 2000" 
+			  Began with GENERATION = 0.
+
+13 Jun 2000	0.0.49	- adding a generic terminal interface (termios like) (which
+			  in practice means that read() on pccon works... at least in
+			  canonical linemode, I haven't tried the non-canonical
+			  mode yet)
+
+15 Jun 2000	0.0.50	- adding sys_dup2()
+			- adding minimalistic skeleton for /bin/login
+			- simple (very ugly) ioctl support for pccon terminals
+			  (at least it allows the login program to disable local echo
+			  when the password is read)
+			- adding timer sleep, sys_nanosleep()
+			- EXTREMELY annoying bug somewhere in or around pswitch()
+			  when all processes are sleeping... too tired to fix tonight
+
+16, 19, 20	0.0.51	- found the "bug". OpenBSD seems to return the result from
+Jun 2000		  fork in a not-so-obvious way on i386. (See http://www.openbsd.org
+			  /cgi-bin/cvsweb/src/lib/libc/arch/i386/sys/fork.S?rev=1.2
+			  and you can imagine how I felt when I saw it... :-)
+
+26 Jun 2000	0.0.52	- using sleep/wakeup in lock/unlock
+			- beginning to add sys_wait4()
+
+27 Jun 2000	0.0.53	- the system seems to compile without problems on NetBSD/i386
+			  1.4 (which uses a.out, very similar to OpenBSD/i386)
+			- adding quad __syscall() for the openbsd_aout emulation,
+			  although return values are truncated to 32 bits (edx = 0).
+			- simple wait4() allows init to restart getty zombies
+
+6 Jul 2000	0.0.54	- trying to fix some memory leaks, but there's still something
+			  wrong... I'm loosing 16KB for each respawned getty/login...
+
+17 Jul 2000	0.0.55	- fixing the memory leaks (the collapsing of redundant shadow
+			  vm_objects into a single object wasn't implemented earlier)
+
+19 Jul 2000	0.0.56	- writing sys_mmap() and sys_munmap()
+			- moved vmregion part of sys_fork() to a new function
+			  called vm_fork() (vm/vm_fork.c)
+
+20 Jul 2000	0.0.57	- wrote a preliminary sys_break() (pages are not free():d
+			  if the break address is lowered)
+			- adding sys_getgid() and sys_getegid()
+			- adding sys_stat()
+			- emtpy sys_access(), and openbsd_aout's lstat() uses
+			  plain stat() for now...
+			- /bin/login runs "uname -a", shows the contents of /etc/motd,
+			  and finaly starts /bin/sh. pdksh (default /bin/sh from
+			  OpenBSD) is actually running interactively! Built-in
+			  commands run fine (set, echo, ...), but if you try to run
+			  a program, for example uname, the shell will hang because
+			  signals are not yet implemented...
+
+24 Jul 2000	0.0.58	- adding sys_sigprocmask() (and a hack for openbsd_aout)
+			- adding sys_sigaction() (but there's no signal delivery
+			  stuff yet)
+			- system_time (measured from 1 Jan 1970) now runs at
+			  HZ times per second granularity
+			- adding sys_gettimeofday() (without timezone support)
+			- faking "." and ".." entries in msdosfs root directories
+			  and returning correct inode for ".." pointing to the
+			  root directory (which is "inode 0" in msdosfs)
+
+26 Jul 2000	0.0.59	- a more correct emulation of openbsd_aout sys_break()
+			- adding current directory and root directory vnode
+			  references to the process structure
+			- adding sys_chdir()
+			- adding sys_chroot() (not tested yet)
+			- rewriting vfs_stat() (previously called stat())
+			- faking "." and ".." in devfs root directories
+			- adding sys_fchdir()
+
+27-28 Jul 2000	0.0.60	- adding sys_lseek()
+			- adding simple fortune function to login(1)
+			- refreshed sys_open(), sys_close()
+			- moving code from fd_detach() to vnode_close()
+			- fixed small but very serious bug in sys_fstat() (I had
+			  forgotten to actually copy the stat struct :-} )
+			- preliminary sys_fcntl() which supports F_DUPFD, F_GETFD,
+			  F_SETFD, F_GETFL, and F_SETFL (although the implementation
+			  is not correct)
+			- adding cursor keys (up, down, left, right, home, end,
+			  insert, delete) to pccon, which allows interactive
+			  line editing line and history in pdksh
+
+29 Jul 2000	0.0.61	- adding sys_setgid(), sys_setegid()
+			- adding "kernel timers"
+			- fdc turns off motors when there has been no activity
+			  for 3 seconds...
+			- readonly mapping files into memory (with mmap()) works
+			  a little, but there's a refcount bug somewhere...
+
+15 Aug 2000	0.0.62	- adding a bsize entry to the device struct
+			- skeleton for ffs_read_superblock()
+			- fixed serious bug in block_read(): when reading several
+			  blocks in one call, only the last block was returned to
+			  the caller
+
+18 Aug 2000	0.0.63	- reordering a lot of things in the TODO file
+			- sys_fcntl() bug fixed: new descriptor after a F_DUPFD
+			  should NOT have fcntl_dflag = FD_CLOEXEC...
+			- moving modules/isa to modules/bus/isa, and
+			  include/sys/modules/isa to include/sys/modules/bus/isa
+
+1 Sep 2000	0.0.64	- continuing on the ffs driver
+
+5-7 Sep 2000	0.0.65	- moving random.c from kern/ to std/
+			- src/sys/config.h is now (and should always be) MI,
+			  MD settings goes into src/sys/md/config.h
+			- continuing on the ffs driver: works readonly, but only
+			  one indirection level so far (ie 16MB max file size if
+			  fs_bsize is 8KB)
+
+11,14 Sep 2000	0.0.66	- scanning the source for printf related holes
+			- combined src/bin/{arch,echo,hostname,pwd,sleep,sync,uname}
+			  into one src/bin/misc.
+			- hopefully better support for uPD765B fdc:s.
+
+15 Sep - 8 	0.0.67	- adding sys_umask (although it has no use yet)
+Oct 2000		- experimenting a bit with signals, but the trampoline
+			  isn't used yet. The whole thing is just a temporary
+			  hack...
+			- makes sure that sys_open() with flags==3 doesn't work
+			- saving i386 fs and gs CPU registers on kernel entry
+
+19 Oct 2000	0.0.68	- opens /dev/console instead of /dev/ttyC0 in init_main()
+			- minor cleanups in pccon (but not tested yet)
+
+30 Oct 2000	0.0.69	- minor fixes in reg/*.c and std/random.c for handling
+			  of global variables without locking... (this
+			  might prevent some race conditions later)
+			- adding an "empty" modules/bus/isa/wdc driver (but there's
+			  a bug: the fdc doesn't seem to be detected after the
+			  wd* devices have been probed ??)
+			- playing around some more with the i386 signal trampoline
+			  code... still just a big mess. There are so many different
+			  cases (userland/kernel, sleeping/running, if in kernelmode:
+			  which syscall, ...) to handle, so I'll probably have to
+			  force machine dependant proc switches in a very ugly way...
+			- interrupt statistics (reg/interrupts.c)
+
+3 Nov 2000	0.0.70	- tried to do isapnp card detection, but it doesn't work
+			- pccon now supports switching between active consoles by
+			  using cursor keys (left/right + ctrl + alt)
+			- signal delivery to processes sleeping in kernelmode
+			  works in some cases
+			- added sys_kill(), but the actual delivery of the signal
+			  doesn't work too well yet
+
+7 Nov 2000	0.0.71	- began on sys_reboot()
+			- moved parts of sys_exit() to a new func. called proc_exit()
+			- adding temporary sys_fstatfs()  (not tested)
+			- temporary sys_getdirentries (ffs/i386 only, partly working)
+
+10 Nov 2000	0.0.72	- fixing some proc cred stuff (the effective uid is
+			  now simply called "uid", and the real uid is "ruid")
+			- minor improvements to the comments in pccon
+			- isapnp card detection works, but no configuration yet
+
+14,16,17	0.0.73	- reads and presents isapnp card resource data correctly
+Nov 2000		- removed some weird code from fdc which didn't make
+			  any sense at all...
+			- i386 biosboot now has a rotating /-\| "counter" instead of
+			  the old "Loading...." message
+			- burnkernel can now burn "any" kernel onto a floppy using
+			  "any" filesystem format... slow, but works in some special
+			  cases, and it's neccessary until I write an ffs burnkernel
+			- fdc: readtip modified to let buffercache_read() read
+			  entire tracks, not just the rest of a track. (causes
+			  approx. 5% speed increase)
+
+19 Nov 2000	0.0.74	- one vnode can now have several names (this is the way I
+			  should have done it from the beginning)
+
+24 Nov 2000	0.0.75	- adding functions to check userland memory ranges
+			  (vm/vm_prot.c)
+			- devfs get_direntries()
+
+25 Nov 2000	0.0.76	- moving some of the uglyness from sys_getdirentries()
+			  to ffs_get_direntries()
+			- found stupid bug in find_proc_by_pid() (had acciden-
+			  tally written a semicolon after a while(), before the
+			  actual code)  ==>  kill() works better now
+			- procfs skeleton (get_direntries and namestat work,
+			  but the directories (one for each process) are still
+			  emtpy)
+
+28 Nov 2000	0.0.77	- fixed weird bug: OpenBSD has a "pad int" between the
+			  first two arguments of sys_lseek().  (This also fixes
+			  the password-database-reading problems I had before.)
+			- another bug of the same type:  OpenBSD's sys_mmap()
+			  (the bug that caused "ls" to crash when listing more
+			  than 5 files in long format has dissapeared, probably
+			  due to this bugfix)
+			- some other minor bugfixes
+			- cmos date/time is converted into Unix seconds
+			- probes for 3c509* cards on the isa bus (no isapnp or
+			  eisa yet)
+
+1-2 Dec 2000	0.0.78	- ep can receive packets by polling, doesn't work in
+			  interrupt-driven mode yet
+			- return value from syscalls to userland is now "ret_t"
+			  throughout the system
+
+8 Dec 2000	0.0.79	- trivial kdb (built-in kernel debugger) with
+			  {continue, help, mdump, modules, reboot, version}
+			  and i386 dumpcmos so far. pccon jumps into kdb
+			  if ctrl-alt-esc is pressed
+			- empty pccom using BIOS to detect available ports
+			  (not tested yet, since my testing machine doesn't
+			  have any serial ports right now)
+			- began rewrite of the vfs: better locking etc (which
+			  is neccessary to implement correctly before write
+			  support is added.)
+
+12,13 Dec 2000	0.0.80	- compiles without errors with a mac68k cross compiler
+			- fdc can now write too
+			- added block_write(), but there's only synchr.
+			  write support so far
+			- added sys_readlink() and ffs_readlink()
+			- better device registry interface
+			- many-read / one-write lock() and unlock()
+			  (although not all of the code has been properly
+			  converted yet)
+
+2 Jan 2001	0.0.81	- fixing VERY annoying bug: at the end of an interrupt
+			  service routine for irq lines 8-15 on i386, both of
+			  the 8259 chips need to be sent the EOI signal. (This
+			  was the conflict which caused everything to break
+			  down when the wdc driver detected the disks.)
+			- super-ugly-quick-hack read-only harddisk driver
+			  (hardcoded to a specific partition), which allows
+			  me to mount /dev/wd0a containing a NetBSD ffs
+			  partition.
+			  Some binaries from NetBSD actually work under Yoctix'
+			  openbsd_aout emulation :-)
+
+5 Jan 2001	0.0.82	- began cleanup of the wdc partition stuff... only
+			  tested with one disk, but it is supposed to handle
+			  both PC partitions and BSD partitions. (No "extended"
+			  PC partitions yet, though.)
+
+6 Feb 2001	0.0.83	- not much... began work on sys_mount() (not tested yet)
+
+10-11,		0.0.84	- moving bin/cat, bin/hdump, and bin/mkdir into bin/misc
+21,25 Feb 2001		  to save some bootdisk space
+			- trying to get mmap to accept ld.so's behaviour
+			- vm_fault() fix: release lock if the process gets killed

@@ -1,0 +1,7 @@
+Makefile	Makefile for libstd.a
+kusleep.c	kusleep()
+panic.c		panic()
+printk.c	printk()
+random.c	Pseudo random number generator
+snprintf.c	snprintf()
+string.c	Various string handling functions

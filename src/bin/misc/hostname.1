@@ -1,0 +1,20 @@
+.\" Copyright (C) 1999 by Anders Gavare
+.\" All Rights Reserved
+.TH hostname 1 "15 Oct 1999"
+.SH NAME
+hostname \- get or set current hostname
+.SH SYNOPSIS
+.LP
+.BI "hostname [-s] [hostname_to_set]"
+.SH DESCRIPTION
+.BR hostname
+writes the current hostname to stdout. If the '-s' switch is
+used, any domain information is stripped from the output.
+Only the super-user can set a new hostname. This is normally
+done by
+.BR "/etc/netstart" .
+.SH SEE ALSO
+.BR domainname (1),
+.BR gethostname (3),
+.BR sethostname (3),
+.BR netstart (5)

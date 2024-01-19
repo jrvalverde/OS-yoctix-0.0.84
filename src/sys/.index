@@ -1,0 +1,15 @@
+GENERATION	Compile generation number
+Makefile	Makefile for the entire kernel
+Makefile.i386	i386 Makefile
+Makefile.mac68k	mac68k Makefile
+arch		Architecture (machine) dependant code
+config.h	Kernel configuration
+include		Kernel include files
+kern		Kernel core (initialization, syscalls, ...)
+make_ci		Used to generate compile_info.c
+md		Mach. dependant (link to arch/XXX)
+modules		Modules (device drivers etc)
+reg		Registry for interrupts, modules, filesystems, ...
+std		Standard functions (printk, memcpy, ...)
+vfs		The virtual file system
+vm		The virtual memory system

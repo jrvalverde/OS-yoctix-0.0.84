@@ -1,0 +1,17 @@
+#  /etc/rc
+#  -------
+#
+#  To do here:
+#
+#	fsck
+#	remount rw
+#	mount all local
+#	start networking (/etc/netstart)
+#	mount all remote
+#	rc.local
+
+PATH=/sbin:/bin
+export PATH
+
+hostname `cat /etc/myname`
+

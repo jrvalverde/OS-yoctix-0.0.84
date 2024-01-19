@@ -1,0 +1,7 @@
+Makefile	Makefile for libvfs.a
+vfs_block.c	Block I/O functions (used by filesystem drivers)
+vfs_init.c	Initialization of the virtual file system
+vfs_mount.c	vfs_mount()
+vfs_namei.c	Name to inode number lookup
+vfs_stat.c	vfs_stat()
+vfs_vnode.c	vnode related functions

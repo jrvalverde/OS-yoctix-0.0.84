@@ -1,0 +1,13 @@
+The following topics should be covered by man pages:
+
+	*  all "global" kernel functions (chapter 9)
+
+	*  securelevel
+
+	*  hier (7)    (is this neccessary?)
+
+	*  device drivers, modules
+
+	*  any /sbin or /bin programs that are part of the
+	   Yoctix "distribution"
+

@@ -1,0 +1,27 @@
+Yoctix
+======
+
+Written by Anders Gavare. Take a look at the Yoctix project homepage
+for more information.
+
+
+How to build a test-boot-floppy    (this works most of the time)
+----------------------------------------------------------------
+
+	The following should work on OpenBSD/i386 and similar systems:
+
+	1.  Create an ffs or msdosfs filesystem on a (formatted) floppy.
+
+	2.  Mount the floppy onto the "bootdisk" directory.
+
+	3.  'make boot'
+
+	4.  Place additional files on the floppy, such as pdksh (/bin/sh)
+	    or ls.  (These are not included in the Yoctix source tree.)
+
+	5.  umount the floppy.
+
+	6.  Now a new bootsector needs to be written to the floppy. There are
+	    some variants of "burnkernel" in src/MISC. Note that for example
+	    the msdosfs burnkernel doesn't understand ffs filesystems and vice
+	    versa.

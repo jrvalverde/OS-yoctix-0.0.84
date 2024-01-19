@@ -1,0 +1,22 @@
+#!/bin/sh
+#
+#  make_ci
+#  -------
+#
+#  Create the file "compile_info.c" containing information about
+#  the compilation generation, user and host where the compile took
+#  place, and the date/time.  Also, increase the generation counter.
+#
+
+export gen=$((`cat GENERATION`+1))
+echo $gen > GENERATION
+
+(
+  printf "char *compile_info = \""
+  echo -n "$USER@"
+  echo -n `hostname`" ["`uname`/`uname -m`"] "
+  echo -n `date +"%Y-%m-%d %H:%M"`
+  printf "\";\n"
+  printf "char *compile_generation = \"#$gen\";\n"
+) > compile_info.c
+

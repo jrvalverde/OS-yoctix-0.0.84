@@ -1,0 +1,14 @@
+.\" Copyright (C) 1999 by Anders Gavare
+.\" All Rights Reserved
+.TH sync 1 "15 Oct 1999"
+.SH NAME
+sync \- write unwritten buffers to disk
+.SH SYNOPSIS
+.LP
+.BI "sync"
+.SH DESCRIPTION
+.BR sync
+writes unwritten buffers to disk. This is necessary
+to do before rebooting to avoid data loss.
+.SH SEE ALSO
+.BR sync (2)

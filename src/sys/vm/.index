@@ -1,0 +1,7 @@
+Makefile	Makefile for libvm.a
+vm_fault.c	Page fault handler
+vm_fork.c	VM specific part of the fork() syscall
+vm_init.c	Initialization of the vm system
+vm_object.c	vm_object handling functions
+vm_prot.c	Userland address range checks
+vm_region.c	vm_region handling functions

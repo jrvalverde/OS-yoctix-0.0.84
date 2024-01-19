@@ -1,0 +1,303 @@
+Yoctix TODO
+-----------
+
+This is a real TODO file -- it grows larger as time moves forward. ;-)
+
+Here's what I have to do next. This list is sorted approximately according
+to priority, although I probably will not fix things in this order anyway.
+It is also possible that I have fixed some of these things and forgot to
+remove them from this file...
+
+	*  remove "mov edx,0" from syscall_asm.S
+
+	*  VFS:
+		*  mount:  old vnode data should be overwritten by new.  example:
+		   when /proc is mounted, the old proc is stat():ed, but AFTER the
+		   mount, a stat returns data from "/proc/." when "/proc" is stat()ed.
+		   This is the way it should be, but some functions (sys_open() etc)
+		   call vnode_lookup() which has the old stat data cached... (FIX!!!)
+		*  block_read should not cache blocks being read during
+		   pagein to a vnode... they are already cached by the vm_object
+		   representing it
+		*  check user permissions
+		*  write support
+		*  symlinks
+		*  fix vfs_register/unregister races (interrupts)
+
+		*  ffs (modules/fs/ffs):
+		   +  full indirection support (only 1 level supported right now)
+		   +  non-existant blocks should be assumed to be zero-filled!
+		   +  write support
+
+	*  signals
+
+	*  networking
+		*  sockets
+		*  interfaces  (ethernet, slip ?)
+		*  ARP, routing tables?
+		*  IP, ICMP, UDP
+		*  TCP
+
+	*  isapnp / PCI:
+		*  generic IRQ/DMA etc. configuration
+		*  3c509b (isapnp) support... help from
+		   OpenBSD's /sys/dev/ic/elink3.c:
+			o)  eisa/pci probe
+
+	*  ffs burnkernel
+
+	*  panic should kill all processes :-)
+
+	*  fix bug (in pccon???):  cat /usr/share/games/fortune/fortunes
+	   looks weird
+
+	*  irq_dispatcher():  better ack of interrupts!!!
+
+	*  Optimize interrupts() by making it completely MD.  (There's no need
+		to keep it MI since it is such a simple function anyway.)
+
+	*  procfs
+
+	*  wait4():
+	   +  rusage struct stuff
+	   +  support all options (WNOHANG, wait for specific processes etc)
+
+	*  Harddisk Controller (wdc):
+		+  write support
+		+  readtip for partitions !!
+
+	*  partition table and disklabel support:
+		+  support non-primary PC slices
+		+  the disklabel stuff must be moved out of the wdc driver!!!
+
+	*  serial port driver (modules/bus/isa/pccom)  (ttyS0, ttyS1, ...?)
+
+	*  panic() i386 call trace (by reading addresses from the stack?)
+
+	*  full implementation of mmap, mprotect, madvice, ..
+	   (would allow shared libraries to work ...?)
+
+	*  free mcbs should be linked to each other, so that malloc time
+	   is reduced as much as possible... one page chain for each malloc
+	   size (???)
+
+	*  lock: special sleep queue, or something else
+	   to queue processes when several processes are waiting
+	   "blocking" for the same address (??)
+
+	*  vm_region_attach() and detach() error codes should be treated
+	   correctly in openbsd_aout_*
+
+	*  detach regions correctly on failed exec!
+
+	*  separate READ and WRITE ports registry in reg/ports.c...
+
+	*  possibly connect ports ranges to modules instead of just a char *.
+	   (that way, modules don't need to call ports_unregister() before they
+	   call module_unregister())
+
+	*  standard /dev devices: null, zero, [apsu]random, tty,
+	   stdin, stdout, stderr, fd/*, mem & kmem (?)
+
+	*  dmesg should be retrievable from userland
+
+	*  fdc:
+		+  full uPD765A and B support
+		+  ioctl (format) etc.
+		+  don't use bios data to detect drives!
+		+  two timers for motor timeout (?) (fd0 and fd1 are separate...)
+
+	*  biosboot:
+		+  remove the "error" stuff to get more room for the table at the end
+		+  read-with-retry?
+
+	*  VM/proc:
+		+  finer grained locking in vm_fault()
+		+  freeing "orphaned" pages (if both processes after a
+		   copy-on-write-fork have written on their copies)
+
+	*  function prototypes should have "const" on arguments if they are
+	   not to be changed...
+
+	*  ioctl constants (for example tcgetattr() and stuff) should
+	   be generalized
+
+	*  pccon:
+		+  Maybe a complete rewrite, or at least a thourough code audit...
+		+  optimize by "rendering" in memory before copying to videomem (?)
+		+  ANSI/vt100 emulation
+		+  only lock vc's that we write to, not the whole pccon driver
+		+  don't switch virtual consoles if lock_write is on in
+			either of the 2 vc's (the one we're changing to and
+			the one we're changing from)
+		+  reset keyboard during initialization
+		+  bell sound
+		+  handle CTRL- and ALT-combos like in other systems... (CTRL-;
+		   ie CTRL-< on English keyboards seems to be a duplicate CTRL-L)
+		+  correct CAPS-lock handling (not hardcoded to Swedish layout)
+		+  correct codepage translation (sе att едц visas korrekt)
+		+  80x50 text mode, graphical modes ("frame buffer" text mode???)
+
+	*  terminal stuff
+		+  check for "termios compliance" (Single Unix Spec...)
+		+  xon/xoff "stopped" stuff
+		+  process groups (foreground, background etc)
+		+  signals (sigint, sigquit, sigttou, ...)
+		+  "line kill" doesn't remove TABs, as tabs are longer than one
+		   char each  (possible solution: print ^R (or whatever it is)
+		   and a CR+LF and kill the entire line)
+
+	*  relative makefiles, correct Make dependancies, module dependencies
+	   in modules/CONFIG
+
+	*  if malloc() cannot find more free memory, try to free structures:
+		+  unused vm_objects (referenced from vnodes)
+		+  unused vnodes (found on the vnode hash chains...)
+		+  disk cache blocks not used lately
+		+  Last resort: either panic() or return ENOMEM (should be
+		   configurable in config.h !!!)
+
+	*  no memory leaks:
+		+  all malloc()'s, except those cases where the malloced area
+		   needs to stay forever (such as kernel pagetables), should
+		   have a corresponding free() call.
+		+  malloc() calls may return NULL. This must ALWAYS be
+		   handled correctly.
+		+  structures that are allocated in specific ways (for example
+		   the process structure) need to be freed in specific ways...
+		   use tiny general routines, don't do it manually each time!
+		+  refcounts must be consitently maintained
+
+	*  built-in kernel debugger:
+		+  when returning via 'continue', the enter key slips
+		   through to the virtual console...  (pccon specific)
+		+  assembler/disassembler etc...
+
+	*  sys_reboot() should switch to vc 0 on halt
+
+	*  go through all source files:
+		+  check copyright, header comment
+		+  remove unneccessary include directives
+		+  fix all critical TODOs
+		+  functions:
+			*  check return/argument types (for portability)
+			*  check return value of all function calls where appropriate
+			*  check lengths on string operations
+			*  malloc/free must match up
+			*  lock/unlock
+			*  add comments where the code is not obvious
+			*  REMOVE unneccessary comments
+			*  use macros where appropriate
+			*  IMPORTANT:  memory moves are not always atomic, for example if
+				a and b are u_int64_t, the statement "a = b;" on i386 will
+				translate into several instructions, and a will be updated
+				twice. I believe that sparc has some weird stuff going on
+				when updating entire 32-bit values...
+				Solution:  always use interrupts(ENABLE/DISABLE) correctly
+		+  add new functions (if neccessary) to remove redundant code
+		   from other functions
+		+  syscalls should be as compatible as possible with existing
+		   standards (POSIX, Single Unix Spec., ...)
+
+	*  beta testing and documentation:
+	   +  beta testing:
+		*  try the system on several machines / hw configurations
+		*  try to force low memory and see how the system operates
+		*  try different kinds of fork() bombs, DoS programs etc.
+	   +  documentation:
+		*  update the web pages to match the current state of Yoctix
+		*  write man pages (see doc/manpages for more info)
+
+
+
+----  ABOVE:  Should be written/fixed/done before version 0.1.0
+----
+----  BELOW:  Everything else...
+
+
+
+	*  BSDify names (for example:  siglist ==> p_siglist, P_SLEEP ==> SSLEEP,
+	   status ==> p_stat...) (or maybe not...)
+
+	*  single namespace for modules and devices (???) (but modules should
+	   obviously not show up in the filesystem via devfs)
+
+	*  msdosfs    (is this neccessary when ffs has been implemented???)
+		*  write, truncate, create, mkdir, remove/unlink
+		*  getdirentries
+
+	*  framebuffer device, and a console driver using the frame buffer.
+		+  Should be compatible with XFree86 and similar systems...
+
+	*  Speed-ups:
+	    O  use hash tables whenever possible/usable/neccessary
+	       +  sleep queues: hashing the sleep address can give a number,
+		  for example 0..63, which is used to select which sleep
+		  queue to use
+	       +  everything which has to do with the vm system
+	    O  generalize syscall argument passing (ie the number of
+		arguments passed should only be as few as neccessary)
+	    O  inline functions, defines etc.
+
+	*  BIOS32 and apm detection  ???
+
+	*  refcount on emulations (so that they can be unloaded safely when
+	   no more processes are using the emulation)
+
+	*  multidimensional parity bit error detection/correction... can be used
+	   for any kind of data, but one example would be to use it on RAM pages.
+	   But this is slow. The most effective use of this would be as a "checksum"
+	   during data transfers...
+
+	*  arch/i386/signal_asm.S is too hardcoded to openbsd_aout...
+
+	*  correct handling of 'args' in all modules! (init/probe/force etc)
+
+	*  XXX_deinit() in all modules/ files
+
+	*  module load/unload  (ie built-in kernel dynamic linker)
+
+	*  better pseudo-random number generator (kern/random.c)
+
+	*  sort portsranges registration according to baseport
+
+	*  kernfs  ???
+
+	*  scheduler (priorities etc)
+		*  The following things should increase priority:
+			+  waiting for tty input
+			+  has called sleep() recently (?)
+			+  waiting for network input
+
+	*  swap add/remove
+
+	*  ramdisk devices
+
+	*  coprocessor stuff
+
+	*  better msdosfs burnkernel (1.2 MB floppies etc)
+
+	*  fix isadma channels 4-7 ??? (see modules/isa/isa.c)
+
+	*  parallel port driver
+
+	*  nfs (!!?)
+
+	*  PCI detection
+
+	*  ports to non-i386 architectures: mac68k, others?
+
+	*  finnish the pcppi module
+
+	*  pcsound at pcppi  (8-bit sound driver)  ???  (register /dev/audio)
+
+	*  different [sets of] run queues for each cpu (SMP)
+
+	*  support for X windows... (memory stuff etc)
+
+	*  filesystems (ext2fs, minixfs, vfat/fat32)
+
+	*  Linux emulation
+
+	*  cluster support ??? (ram, files, processes, users, networking...)
+

@@ -1,0 +1,6 @@
+Makefile	Makefile for the fast filesystem driver
+dinode.c	dinode operations (ffs__readdinode())
+ffs.c		Initialization etc.
+read.c		Block reading functions (ffs__readblock(), ffs_read())
+stat.c		Stat functions (ffs_namestat(), ffs_istat())
+super.c		Superblock functions (ffs__superblockdump(), ffs_read_superblock())

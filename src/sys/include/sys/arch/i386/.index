@@ -1,0 +1,9 @@
+cpufunc.h		Read/write special CPU registers (from NetBSD)
+defs.h			Typedefs for signed/unsigned "ints" of different sizes
+machdep.h		Machine dependant "generic" definitions
+os.h			OS_ARCH and OS_MACHTYPE
+pic.h			8259A PIC
+pio.h			Port input/output functions (from OpenBSD)
+proc.h			i386 MD part of the proc struct (including the i386 tss)
+stdarg.h		va_arg stuff (from NetBSD)
+timer.h			Timer settings (HZ and SWITCH_HZ)

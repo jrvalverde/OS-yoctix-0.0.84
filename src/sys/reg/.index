@@ -1,0 +1,7 @@
+Makefile		Makefile for libreg.a
+device.c		Device registration
+dma.c			DMA channel registration
+emul.c			Binary emulation registration
+interrupts.c		Interrupt handler registration
+module.c		Module registration
+ports.c			Hardware ports registration

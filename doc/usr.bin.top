@@ -1,0 +1,55 @@
+Ideas about the "top" utility for Yoctix
+----------------------------------------
+
+
+This is what OpenBSD's top looks like:
+
+load averages:  0.15,  0.20,  0.30                                 18:29:28
+48 processes:  1 running, 47 idle
+CPU:  1.2% user,  1.1% nice,  1.1% system,  1.1% interrupt, 95.5% idle
+Memory: Real: 13M/54M act/tot  Free: 15M  Swap: 24M/149M used/tot
+
+  PID USERNAME PRI NICE  SIZE   RES STATE WAIT     TIME    CPU COMMAND
+ 3710 root       2    0 7820K   11M sleep select  51:20  0.15% XF86_SVGA
+   95 debug      2   10  736K 1400K sleep select   1:21  0.10% xterm
+ 4293 debug      2    4   22M   16M idle  select  17:39  0.00% netscape
+29775 debug      2    0  432K  832K idle  select  10:30  0.00% ssh1
+30307 debug     58   10  184K  596K run   -        6:10  0.00% top
+32347 debug      3   10  256K  584K sleep ttyin    5:15  0.00% systat
+ 3002 debug      3   10  284K  716K sleep ttyin    3:45  0.00% systat
+19431 debug      2   10  704K 1296K sleep select   1:48  0.00% xterm
+ 6879 debug      2    0 1156K 1072K idle  select   1:00  0.00% wget
+22921 debug      2    0 1708K 2980K idle  select   0:53  0.00% xterm
+
+NetBSD also includes WCPU. Before PRI and NICE are implemented, maybe
+the following would be sufficient in Yoctix:
+
+  PID USERNAME  SIZE   RES HOST     WAIT     TIME  CPU  COMMAND
+ 3710 root     7820K   11M node1    select  51:20  0.2% någonting
+   95 debug     736K 1400K node2    run(u)   1:21  0.1% top
+19313 guest    1004K  594K node1    ttyin    0:41  0.0% sh
+
+The HOST field could be included when running a cluster of several hosts.
+
+WAIT could show the wait message, or if the process is running it could
+show "run". Or even better: "run(u)" for usermode and "run(s)" for system
+(or syscall). "run(i)" would probably never occur. (?)
+
+top could check the process' ticks pointer to sense if the process is
+currently in system mode.
+
+Fields that could be included:
+
+	PID		Process ID
+	USERNAME	Username from the password database (needs to
+			use quick lookup, cache...?)
+	PRI/NICE	Priority/nice value
+	SIZE		The total size of all vmregions of the proc.
+	RES		The number of actual mapped pages
+	HOST		Hostname (in a cluster) where the process is
+	WAIT		Wait message, or "run(X)" where X is u,s,i
+			(user, system/syscall, interrupt)
+	TIME		CPU time used
+	CPU		% cpu since last update
+	COMMAND		argv[0], or the name of the vnode used for the
+			code vmregion

@@ -1,0 +1,37 @@
+#
+#  Yoctix kernel makefile
+#  ----------------------
+#
+#  Edit config.h, md/config.h, and modules/CONFIG before running make.
+#
+
+
+LIBS=kern/libkern.a reg/libreg.a md/libmd.a vfs/libvfs.a vm/libvm.a std/libstd.a modules/libmodules.a
+
+all:
+	cd md; make; cd ..
+	cd kern; make; cd ..
+	cd reg; make; cd ..
+	cd vfs; make; cd ..
+	cd vm; make; cd ..
+	cd std; make; cd ..
+	cd modules; make; cd ..
+	./make_ci
+	$(CC) -c compile_info.c
+#	ld -nostdlib -Bstatic -Ttext 0x100000 -z md/machdep_main.o $(LIBS) -o yoctix
+	ld -nostdlib -Bstatic -Ttext 0x100000 -z md/machdep_main.o compile_info.o $(LIBS) -Bforcearchive -o yoctix
+
+clean:
+	cd md; make clean; cd ..
+	cd kern; make clean; cd ..
+	cd reg; make clean; cd ..
+	cd vfs; make clean; cd ..
+	cd vm; make clean; cd ..
+	cd std; make clean; cd ..
+	cd modules; make clean; cd ..
+	rm -f yoctix compile_info.*
+
+
+modulesclean:
+	cd modules; make clean; cd ..
+

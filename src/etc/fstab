@@ -1,0 +1,3 @@
+/dev/fd0 / ffs rw
+none /dev devfs rw
+none /proc procfs ro

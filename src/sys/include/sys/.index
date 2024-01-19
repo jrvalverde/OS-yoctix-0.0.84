@@ -1,0 +1,8 @@
+arch			Architecture (machine) dependant include files
+console.h		Header file for the "simple console"
+defs.h			Definitions of uid_t, time_t, off_t, etc.
+md			(link to arch/XXX)
+modules			Header files for specific modules
+kdb.h			Header file for the built-in kernel debugger
+std.h			Header for libstd and other standard functions
+syscalls.h		List of all (native) syscalls

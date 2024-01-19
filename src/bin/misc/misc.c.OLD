@@ -1,0 +1,381 @@
+/*
+ *  Copyright (C) 1999,2000,2001 by Anders Gavare.  All rights reserved.
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions are met:
+ *
+ *  1. Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
+ *  2. Redistributions in binary form must reproduce the above copyright
+ *     notice, this list of conditions and the following disclaimer in the
+ *     documentation and/or other materials provided with the distribution.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+ *  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ *  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ *  ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+ *  FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ *  DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ *  OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ *  HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+ *  OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ *  SUCH DAMAGE.
+ */
+
+/*
+ *  misc  --  Misc. /bin binaries
+ *
+ *  usage: arch
+ *      15 Oct 1999     First version. Simply prints un.machine
+ *
+ *  usage: cat [filename [..]]
+ *      10 Feb 2001	--
+ *
+ *  usage: date
+ *      2 Dec 2000	First version.
+ *
+ *  usage: echo [-n] [string] [..]
+ *      15 Oct 1999     First version.
+ *
+ *  usage: hdump filename [..]
+ *      10 Feb 2001	--
+ *
+ *  usage: hostname [-s] [hostname_to_set]
+ *      15 Oct 1999     First version.                      
+ *
+ *  usage: mkdir [-p] [-m mode] dirname [...]
+ *	15 Oct 1999	first version
+ *	11 Feb 2001	added into misc
+ *
+ *  usage: ps
+ *      ??		First version.
+ *
+ *  usage: pwd
+ *      15 Oct 1999     First version.
+ *
+ *  usage: sleep seconds
+ *      15 Oct 1999     First version.
+ *
+ *  usage: sync
+ *      15 Oct 1999     First version.
+ *
+ *  usage: uname [-amnrsv]
+ *      15 Oct 1999     First version.
+ */
+
+
+#include <sys/utsname.h>
+#include <unistd.h>
+#include <sys/param.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <dirent.h>
+
+
+
+#include "cat.c"
+#include "hdump.c"
+#include "mkdir.c"
+#include "ps.c"
+
+
+
+int main_arch (int argc, char *argv[])
+  {
+    int res;
+    struct utsname un;
+
+    res = uname (&un);
+    if (res)
+      {
+	perror ("uname()");
+	return 1;
+      }
+
+    printf ("%s\n", un.machine);
+    return 0;
+  }
+
+
+
+int main_date (int argc, char *argv[])
+  {
+    char buf[50];
+    struct tm *tm;
+    time_t t;
+
+    t = time (NULL);
+    tm = localtime (&t);
+    strftime (buf, sizeof(buf), "%a %b %e %H:%M:%S %Z %Y", tm);
+    printf ("%s\n", buf);
+    return 0;
+  }
+
+
+
+int main_echo (int argc, char *argv[])
+  {
+    int i;
+    int nonewline = 0;
+
+    if (argc==1)
+	return 0;
+
+    i = 1;
+    if (!strcmp(argv[1], "-n"))
+      {
+	nonewline = 1;
+	i++;
+      }
+
+    while (i < argc)
+      {
+	printf ("%s", argv[i]);
+	i++;
+	if (i < argc)
+	  printf (" ");
+      }
+
+    if (!nonewline)
+	printf ("\n");
+    return 0;
+  }
+
+
+int main_hostname (int argc, char *argv[])
+  {
+    int res;
+    int i = 1;
+    int switch_s = 0;
+    char hname [MAXHOSTNAMELEN];
+
+    /*  -s switch?  */
+    if (argc>1)
+      {
+	if (!strcmp(argv[1],"-s"))
+	  {
+	    switch_s = 1;
+	    i++;
+	  }
+      }
+
+    /*  Hostname as an argument?  */
+    if (argc>i)
+      {
+	/*  Try to call sethostname():  */
+	res = sethostname (argv[i], strlen(argv[i])+1);
+
+	if (res)
+	  {
+	    perror ("sethostname()");
+	    return 1;
+	  }
+
+	return 0;
+      }
+
+    /*  Print current hostname to stdout:  */
+    res = gethostname (hname, MAXHOSTNAMELEN);
+    if (res)
+      {
+	perror ("gethostname()");
+	return 1;
+      }
+
+    /*  If '-s' was given as an argument, strip away any
+	domain name information:  */
+    if (switch_s)
+      {
+	i = 0;
+	while (i<strlen(hname))
+	  {
+	    if (hname[i]=='.')
+		hname[i] = '\0';
+	    i++;
+	  }
+      }
+
+    printf ("%s\n", hname);
+    return 0;
+  }
+
+
+
+int main_pwd (int argc, char *argv[])
+  {
+    char buf[MAXPATHLEN];
+    puts (getcwd (buf, MAXPATHLEN));
+    return 0;
+  }
+
+
+
+int main_sleep (int argc, char *argv[])
+  {
+    int t;
+
+    if (argc==1 || (t = atoi(argv[1]))<0)
+      {
+	fprintf (stderr, "usage: %s seconds\n", argv[0]);
+	return 1;
+      }
+
+    sleep (t);
+    return 0;
+  }
+
+
+
+int main_sync (int argc, char *argv[])
+  {
+    sync ();
+    return 0;
+  }
+
+
+
+void uname_showstr (char *s)
+  {
+    static int first_time = 1;
+
+    if (!first_time)
+	printf (" ");
+    printf ("%s", s);
+    first_time = 0;
+  }
+
+
+
+int main_uname (int argc, char *argv[])
+  {
+    int res, i1,i2, fa=0,fm=0,fn=0,fr=0,fs=0,fv=0;
+    char ch;
+    struct utsname un;
+
+    res = uname (&un);
+    if (res)
+      {
+	perror ("uname()");
+	return 1;
+      }
+
+    /*  No arguments?  Default to '-s'  */
+    if (argc==1)
+      {
+	fs = 1;
+      }
+
+    /*  Arguments?  */
+    i1 = 1;
+    while (i1<argc)
+      {
+	if (argv[i1][0]!='-' || strlen(argv[i1])<2)
+	  {
+	    fprintf (stderr, "usage: %s [-amnrsv]\n", argv[0]);
+	    exit (0);
+	  }
+	i2 = 1;
+	while (i2<strlen(argv[i1]))
+	  {
+	    ch = argv[i1][i2];
+	    if (ch=='a')
+		fa = 1;
+	    else
+	    if (ch=='m')
+		fm = 1;
+	    else
+	    if (ch=='n')
+		fn = 1;
+	    else
+	    if (ch=='r')
+		fr = 1;
+	    else
+	    if (ch=='s')
+		fs = 1;
+	    else
+	    if (ch=='v')
+		fv = 1;
+	    else
+	      {
+		fprintf (stderr, "usage: %s [-amnrsv]\n", argv[0]);
+		exit (0);
+	      }
+
+	    /*  next char in argument  */
+	    i2++;
+	  }
+
+	/*  next argument  */
+	i1++;
+      }
+
+    if (fa)
+      {  fm=1; fn=1; fr=1; fs=1; fv=1;  }
+
+    if (fs)	uname_showstr (un.sysname);
+    if (fn)	uname_showstr (un.nodename);
+    if (fr)	uname_showstr (un.release);
+    if (fv)	uname_showstr (un.version);
+    if (fm)	uname_showstr (un.machine);
+
+    printf ("\n");
+    return 0;
+  }
+
+
+
+void help ()
+  {
+    printf ("usage:\tarch\n"
+		  "\tcat\n"
+		  "\tdate\n"
+		  "\techo [-n] [string] [..]\n"
+		  "\thdump filename [..]\n"
+		  "\thostname [-s] [new_hostname]\n"
+		  "\tmkdir [-p] [-m mode] dirname [...]\n"
+		  "\tps\n"
+		  "\tpwd\n"
+		  "\tsleep seconds\n"
+		  "\tsync\n"
+		  "\tuname [-amnrsv]\n");
+  }
+
+
+
+int main (int argc, char *argv[])
+  {
+    char *n = argv[0];
+
+    if (!n)
+      {
+	help ();
+	exit (1);
+      }
+
+    n = argv[0]+strlen(argv[0]);
+    while (n>=argv[0] && *n!='/')
+	n--;
+
+    n++;
+
+    if (!strcmp(n, "arch"))		return main_arch (argc, argv);
+    if (!strcmp(n, "cat"))		return main_cat (argc, argv);
+    if (!strcmp(n, "date"))		return main_date (argc, argv);
+    if (!strcmp(n, "echo"))		return main_echo (argc, argv);
+    if (!strcmp(n, "hdump"))		return main_hdump (argc, argv);
+    if (!strcmp(n, "hostname"))		return main_hostname (argc, argv);
+    if (!strcmp(n, "mkdir"))		return main_mkdir (argc, argv);
+    if (!strcmp(n, "ps"))		return main_ps (argc, argv);
+    if (!strcmp(n, "pwd"))		return main_pwd (argc, argv);
+    if (!strcmp(n, "sleep"))		return main_sleep (argc, argv);
+    if (!strcmp(n, "sync"))		return main_sync (argc, argv);
+    if (!strcmp(n, "uname"))		return main_uname (argc, argv);
+
+    help ();
+    return 1;
+  }
+
+

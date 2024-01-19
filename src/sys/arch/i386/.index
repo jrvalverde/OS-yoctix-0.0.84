@@ -1,0 +1,24 @@
+Makefile			Makefile for i386 specific code
+bioscmos.c			BIOS and CMOS detection/handling
+config.h			i386 specific config.h
+console.c			Simple console driver
+exceptions.c			i386 exceptions (C part)
+exceptions_asm.S		i386 exceptions (asm part)
+gdt.c				Global Descriptor Table functions
+idt.c				Interrupt Descriptor Table functions
+interrupts_asm.S		Hardware ISRs (asm)
+kdb.c				i386 MD part of the built-in kernel debugger
+machdep_main.c			(calls init_main())
+machdep_main_startup.c		Machdep. main startup code
+machdep_res_init.c		Machdep. resource init
+pic.c				PIC functions
+pmap.c				Virtual-to-physical mappings
+proc.c				Process related functions
+signal.c			Signal delivery functions (C part)
+signal_asm.S			Signal delivery functions (asm part)
+syscall_asm.S			Syscall entry (generic, BSD)
+syscall_asm_LINUX.S		Syscall entry (Linux version)
+task.c				i386 task related functions
+timer.c				i386 timer functions
+timer_asm.S			Timer low-level ISR (asm)
+vm.c				Virtual memory functions

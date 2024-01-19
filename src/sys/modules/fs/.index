@@ -1,0 +1,4 @@
+devfs			/dev virtual file system
+ffs			Fast File System driver
+msdosfs			MS-DOS filesystem driver
+procfs			/proc virtual file system

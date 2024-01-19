@@ -1,0 +1,37 @@
+.\" Copyright (C) 1999 by Anders Gavare
+.\" All Rights Reserved
+.TH uname 1 "15 Oct 1999"
+.SH NAME
+uname \- print details about host operating system
+.SH SYNOPSIS
+.LP
+.BI "uname [-amnrsv]"
+.SH DESCRIPTION
+.BR uname
+writes details about the host operating system to stdout.
+.SH OPTIONS
+Without options,
+.BR uname
+prints the OS name (-s option) only.
+The following options are supported:
+.TP
+\f3\-a\f1
+Equivalent to all the options -mnrsv.
+.TP
+\f3\-m\f1
+Print machine (hardware) identification.
+.TP
+\f3\-n\f1
+Print network nodename.
+.TP
+\f3\-r\f1
+Print OS release.
+.TP
+\f3\-s\f1
+Print OS name.
+.TP
+\f3\-v\f1
+Print OS version.
+.SH SEE ALSO
+.BR hostname (1),
+.BR uname (3)

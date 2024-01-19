@@ -1,0 +1,35 @@
+.\" Copyright (C) 1999 by Anders Gavare
+.\" All Rights Reserved
+.TH mkdir 1 "15 Oct 1999"
+.SH NAME
+mkdir \- create directories
+.SH SYNOPSIS
+.LP
+.BI "mkdir [-p] [-m mode] " dirname " [" ... "]"
+.SH DESCRIPTION
+.BR mkdir
+creates directories using permission 0777, modified by the
+current umask value. Available options are:
+.TP
+\f3\-p\f1
+Create all intermediate directories required to reach
+.BR dirname .
+The target directory is allowed to already exist with the -p option
+without causing an error.
+.TP
+\f3\-m mode\f1
+Sets permission to
+.BR mode
+instead of 0777. The value will still be modified by the
+current umask value. This option does not modify the permission
+used on intermediate directories created with -p.
+.TP
+.BR mkdir
+returns 0 on success, 1 on failure.
+.SH BUGS
+Doesn't handle permission modes correctly... (?)
+.SH SEE ALSO
+.BR chmod (1),
+.BR rmdir (1),
+.BR mkdir (2),
+.BR umask (2)

@@ -1,0 +1,5 @@
+Makefile		Makefile for pccon
+pccon.c			pccon main code
+pccon.h			pccon definitions, structs etc.
+pccon_keyb.c		keyboard handling functions
+pccon_video.c		video handling functions
